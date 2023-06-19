@@ -4,6 +4,9 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourceAttributes;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -11,24 +14,35 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class ReadonlyHandler extends AbstractHandler {
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ISelection selection = HandlerUtil
-				.getCurrentSelection(event);
+		ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if (selection instanceof ITreeSelection) {
-			Object firstElement = ((ITreeSelection) selection)
-					.getFirstElement();
-			if (firstElement instanceof IAdaptable)	{
-				IFile iFile = (IFile) ((IAdaptable) firstElement)
-						.getAdapter(IFile.class);
-				if(iFile.isReadOnly()) {
-					iFile.setReadOnly(false);
-				} else {
-					iFile.setReadOnly(true);
+			Object[] firstElement = ((ITreeSelection) selection).toArray();
+			for (Object iterable_element : firstElement) {
+			if (iterable_element instanceof IAdaptable)	{
+				IFile iFile = (IFile) ((IAdaptable) iterable_element).getAdapter(IFile.class);
+				try {
+					iFile.setResourceAttributes(setReadonlyTxt(iFile));
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+			}
 			}
 		}		
 		return null;
 	}
+	
+	public static ResourceAttributes setReadonlyTxt(IResource resource) {
+		  ResourceAttributes resourceAttributes = resource.getResourceAttributes();
+		  if (resourceAttributes.isReadOnly()) {
+			  resourceAttributes
+			  .setReadOnly(false);
+		  } else {
+			  resourceAttributes
+			  .setReadOnly(true);
+		  }
+		  return resourceAttributes;
+		}
 }
