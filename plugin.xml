@@ -45,4 +45,30 @@
             commandId="TestTaskSetReadOnlyTxtFile.command.setReadOnly">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="TestTaskSetReadOnlyTxtFile.ReadOnly"
+            id="TestTaskSetReadOnlyTxtFile.ReadOnly"
+            label="Read-only Decorator"
+            lightweight="true"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IResource">
+               </objectClass>
+               <or>
+                  <objectClass
+                        name="org.eclipse.core.resources.IFolder">
+                  </objectClass>
+                  <objectClass
+                        name="org.eclipse.core.resources.IFile">
+                  </objectClass>
+               </or>
+            </and>
+         </enablement>
+      </decorator>
+   </extension>
 </plugin>
